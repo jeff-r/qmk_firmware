@@ -29,6 +29,6 @@ Then, put the teensy in program mode and run the `program` script in this direct
 
 ## Notes
 
-This was shamelessly copied from the Bantam44 keyboard. So keymap.c specifies three keymaps, but I'm currently only using one.
+This was originally copied from the Bantam44 keyboard.
 
 The keycodes are defined in tmk_core/common/keycode.h.
