@@ -66,8 +66,15 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 // Planck PCB default pin-out
 // Change this to how you wired your keyboard
 // COLS: Left to right, ROWS: Top to bottom
+// Harness 2
+// (Used by 2017.02.1)
 #define MATRIX_ROW_PINS { F0, F1, F4, F5, F6 }
 #define MATRIX_COL_PINS { D7, D6, D4, D5, C7, C6, D3, D2, D1, D0, B7, E6, B3, B2, B1, B0, B5, B4 }
+
+// Harness 3
+// (Used by 2017.03.1)
+// #define MATRIX_ROW_PINS { F1, F4, F5, F6, F7 }
+// #define MATRIX_COL_PINS { B4, D7, D6, D4, D5, C7, C6, D3, D2, D1, D0, B7, B3, B2, B1, B0, B5 }
 
 #define UNUSED_PINS
 
