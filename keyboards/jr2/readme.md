@@ -32,3 +32,11 @@ Then, put the teensy in program mode and run the `program` script in this direct
 This was originally copied from the Bantam44 keyboard.
 
 The keycodes are defined in tmk_core/common/keycode.h.
+
+## On arch:
+
+Install avr gcc and libc:
+
+```
+$ sudo pacman -S avr-gcc avr-libc
+```
