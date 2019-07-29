@@ -1,4 +1,4 @@
 #!/bin/bash
 
-teensy-loader-cli -mmcu=atmega32u4 -w ../../.build/jr2_default.hex
+~/bin/teensy_loader_cli -mmcu=atmega32u4 -w ../../jr2_default.hex
 
