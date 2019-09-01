@@ -47,34 +47,16 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //#define MATRIX_HAS_GHOST
 
 /* Set 0 if debouncing isn't needed */
-#define DEBOUNCING_DELAY 5
+#define DEBOUNCE 5
 
 /* Mechanical locking support. Use KC_LCAP, KC_LNUM or KC_LSCR instead in keymap */
 #define LOCKING_SUPPORT_ENABLE
 /* Locking resynchronize hack */
 #define LOCKING_RESYNC_ENABLE
 
-/* key combination for command */
-#define IS_COMMAND() ( \
-    keyboard_report->mods == (MOD_BIT(KC_LSHIFT) | MOD_BIT(KC_RSHIFT)) \
-)
-
 /* Backlight configuration
  */
 #define BACKLIGHT_LEVELS 4
-
-/* Underlight configuration
- */
-
-/*#define RGB_DI_PIN E2
-#define RGBLIGHT_ANIMATIONS
-#define RGBLED_NUM 2     // Number of LEDs
-#define RGBLIGHT_HUE_STEP 10
-#define RGBLIGHT_SAT_STEP 17
-#define RGBLIGHT_VAL_STEP 17*/
-//Disabled while I figure out a suitable pin for RGB support.
-//I've tried F5, D2, D3, and E2 but it's possible the end of my
-//strand is bad. New LEDs on order.
 
 /*
  * Feature disable options

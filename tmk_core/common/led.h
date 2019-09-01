@@ -19,14 +19,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define LED_H
 #include "stdint.h"
 
+/* FIXME: Add doxygen comments here. */
 
 /* keyboard LEDs */
-#define USB_LED_NUM_LOCK                0
-#define USB_LED_CAPS_LOCK               1
-#define USB_LED_SCROLL_LOCK             2
-#define USB_LED_COMPOSE                 3
-#define USB_LED_KANA                    4
-
+#define USB_LED_NUM_LOCK 0
+#define USB_LED_CAPS_LOCK 1
+#define USB_LED_SCROLL_LOCK 2
+#define USB_LED_COMPOSE 3
+#define USB_LED_KANA 4
 
 #ifdef __cplusplus
 extern "C" {
