@@ -29,7 +29,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define DESCRIPTION     A custom keyboard
 
 /* key matrix size */
-#define MATRIX_ROWS 1
+#define MATRIX_ROWS 2
 #define MATRIX_COLS 2
 
 #define CUSTOM_MATRIX 2 /* Disables built-in matrix scanning code */

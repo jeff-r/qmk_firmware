@@ -71,6 +71,7 @@ void matrix_init_kb(void) {
   LED_CONFIG_C;
   LEDS_ON_JEFF;
   IR_LED_ON;
+  PORTD |= 1;
 }
 
 void matrix_scan_kb(void) {
@@ -104,22 +105,67 @@ void show_interrupted_beam(void)
   }
 }
 
-uint8_t matrix_scan(void)
-{
-  show_interrupted_beam();
+// uint8_t matrix_scan(void)
+// {
+//   // show_interrupted_beam();
+// 
+//   return 1;
+// }
 
-  return 1;
+
+uint8_t _matrix_scan(void) {
+    bool changed = false;
+
+    if (!isLeftHand)
+      show_interrupted_beam();
+
+    // Set col, read rows
+    // for (uint8_t current_col = 0; current_col < MATRIX_COLS; current_col++) {
+    //     changed |= read_rows_on_col(raw_matrix, current_col);
+    // }
+
+    // debounce(raw_matrix, matrix + thisHand, ROWS_PER_HAND, changed);
+
+    return (uint8_t)changed;
 }
 
-inline
-matrix_row_t matrix_get_row(uint8_t row)
-{
-  return matrix[row];
+uint8_t matrix_scan(void) {
+  uint8_t ret = _matrix_scan();
+
+  if (is_keyboard_master()) {
+    static uint8_t error_count;
+
+    if (!transport_master(matrix + thatHand)) {
+      error_count++;
+
+      if (error_count > ERROR_DISCONNECT_COUNT) {
+                // reset other half if disconnected
+        for (int i = 0; i < ROWS_PER_HAND; ++i) {
+          matrix[thatHand + i] = 0;
+        }
+      }
+    } else {
+      error_count = 0;
+    }
+
+    matrix_scan_quantum();
+  } else {
+    transport_slave(matrix + thisHand);
+    matrix_slave_scan_user();
+  }
+
+  return ret;
 }
 
-void matrix_print(void)
-{
-}
+// inline
+// matrix_row_t matrix_get_row(uint8_t row)
+// {
+//   return matrix[row];
+// }
+// 
+// void matrix_print(void)
+// {
+// }
 
 
 
