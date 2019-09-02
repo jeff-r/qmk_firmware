@@ -65,4 +65,4 @@ BLUETOOTH_ENABLE ?= no # Enable Bluetooth with the Adafruit EZ-Key HID
 
 CUSTOM_MATRIX     = yes
 SPLIT_KEYBOARD    = yes
-SPLIT_HAND_PIN    = D6
+# SPLIT_HAND_PIN    = D6

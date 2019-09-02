@@ -44,8 +44,19 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "jr_optical.h"
 #include <string.h>
 
+
+
+// // row offsets for each hand
+uint8_t thisHand, thatHand;
+
+#define ROWS_PER_HAND (MATRIX_ROWS / 2)
+
+#define ERROR_DISCONNECT_COUNT 5
+
+
 /* matrix state(1:on, 0:off) */
 static matrix_row_t matrix[MATRIX_ROWS];
+// static matrix_row_t raw_matrix[ROWS_PER_HAND];
 
 #define LEDS_ON_JEFF  (PORTB = 0b01110000)
 #define LEDS_OFF_JEFF (PORTB = 0)
@@ -89,18 +100,28 @@ void matrix_scan_user(void) {
 void matrix_init(void)
 {
   matrix_init_quantum();
+  thisHand = isLeftHand ? 0 : (ROWS_PER_HAND);
+  thatHand = ROWS_PER_HAND - thisHand;
+}
+
+void toggle_led(void)
+{
+  GREEN_LED_OFF;
+  wait_ms(100);
+  GREEN_LED_ON;
+  wait_ms(100);
 }
 
 void show_interrupted_beam(void)
 {
   if (IR_BEAM_STATE)
   {
-    GREEN_LED_OFF;
+    GREEN_LED_ON;
     matrix[0] = 0;
   }
   else
   {
-    GREEN_LED_ON;
+    GREEN_LED_OFF;
     matrix[0] = 1;
   }
 }
@@ -116,8 +137,9 @@ void show_interrupted_beam(void)
 uint8_t _matrix_scan(void) {
     bool changed = false;
 
-    if (!isLeftHand)
-      show_interrupted_beam();
+    // if (!isLeftHand)
+      // show_interrupted_beam();
+      toggle_led();
 
     // Set col, read rows
     // for (uint8_t current_col = 0; current_col < MATRIX_COLS; current_col++) {
@@ -151,21 +173,21 @@ uint8_t matrix_scan(void) {
     matrix_scan_quantum();
   } else {
     transport_slave(matrix + thisHand);
-    matrix_slave_scan_user();
+    // matrix_slave_scan_user();
   }
 
   return ret;
 }
 
-// inline
-// matrix_row_t matrix_get_row(uint8_t row)
-// {
-//   return matrix[row];
-// }
-// 
-// void matrix_print(void)
-// {
-// }
+inline
+matrix_row_t matrix_get_row(uint8_t row)
+{
+  return matrix[row];
+}
+
+void matrix_print(void)
+{
+}
 
 
 
