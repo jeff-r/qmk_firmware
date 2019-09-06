@@ -97,19 +97,30 @@ __attribute__ ((weak))
 void matrix_scan_user(void) {
 }
 
-void matrix_init(void)
-{
-  matrix_init_quantum();
-  thisHand = isLeftHand ? 0 : (ROWS_PER_HAND);
-  thatHand = ROWS_PER_HAND - thisHand;
-}
-
 void toggle_led(void)
 {
   GREEN_LED_OFF;
   wait_ms(100);
   GREEN_LED_ON;
   wait_ms(100);
+}
+
+
+void matrix_init(void)
+{
+  matrix_init_quantum();
+  thisHand = isLeftHand ? 0 : (ROWS_PER_HAND);
+  thatHand = ROWS_PER_HAND - thisHand;
+
+  if (is_keyboard_master()) {
+    transport_master_init();
+  } else {
+    transport_slave_init();
+  }
+  toggle_led();
+  toggle_led();
+  toggle_led();
+  toggle_led();
 }
 
 void show_interrupted_beam(void)
@@ -172,8 +183,7 @@ uint8_t matrix_scan(void) {
 
     matrix_scan_quantum();
   } else {
-    transport_slave(matrix + thisHand);
-    // matrix_slave_scan_user();
+    // transport_slave(matrix + thisHand);
   }
 
   return ret;
