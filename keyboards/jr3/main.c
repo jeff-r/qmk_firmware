@@ -54,10 +54,12 @@ bool is_keyboard_master(void);
 
 
 bool is_keyboard_right(void) {
+  return false;
     return !is_keyboard_left();
 }
 
 bool is_keyboard_master(void) {
+  return true;
     return is_keyboard_left();
 }
 
