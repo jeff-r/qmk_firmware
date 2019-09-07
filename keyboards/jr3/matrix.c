@@ -75,7 +75,6 @@ static matrix_row_t matrix[MATRIX_ROWS];
 #define CPU_PRESCALE(n) (CLKPR = 0x80, CLKPR = (n))
 
 
-__attribute__ ((weak))
 void matrix_init_kb(void) {
   matrix_init_user();
   LED_CONFIG_B;
@@ -100,8 +99,10 @@ void matrix_scan_user(void) {
 void toggle_led(void)
 {
   GREEN_LED_OFF;
+  matrix[0] = 0;
   wait_ms(100);
   GREEN_LED_ON;
+  matrix[0] = 1;
   wait_ms(100);
 }
 

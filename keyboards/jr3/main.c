@@ -104,15 +104,11 @@ static void setup_usb(void) {
     print_set_sendchar(sendchar);
 }
 
-// *****************************************************************
-// JR
-// This is the main that is linked in
-
 bool is_keyboard_left(void);
 
 void master_USB_USBTask(void) {
-  if (is_keyboard_left())
-    return;
+  // if (is_keyboard_left())
+    // return;
 
   USB_USBTask();
 }
@@ -129,73 +125,18 @@ int main(void) {
     setup_usb();
     sei();
 
-#if defined(MODULE_ADAFRUIT_EZKEY) || defined(MODULE_RN42)
-    serial_init();
-#endif
-
-    /* wait for USB startup & debug output */
-
-#ifdef WAIT_FOR_USB
-    while (USB_DeviceState != DEVICE_STATE_Configured) {
-#    if defined(INTERRUPT_CONTROL_ENDPOINT)
-        ;
-#    else
-        master_USB_USBTask();
-#    endif
-    }
-    print("USB configured.\n");
-#else
     master_USB_USBTask();
-#endif
     /* init modules */
     keyboard_init();
     host_set_driver(&lufa_driver);
-#ifdef SLEEP_LED_ENABLE
-    sleep_led_init();
-#endif
-
-#ifdef VIRTSER_ENABLE
-    virtser_init();
-#endif
 
     print("Keyboard start.\n");
+    dprintf("***********************\n");
     while (1) {
-#if !defined(NO_USB_STARTUP_CHECK)
-        while (USB_DeviceState == DEVICE_STATE_Suspended) {
-            print("[s]");
-            suspend_power_down();
-            if (USB_Device_RemoteWakeupEnabled && suspend_wakeup_condition()) {
-                USB_Device_SendRemoteWakeup();
-            }
-        }
-#endif
 
         keyboard_task();
 
-#ifdef MIDI_ENABLE
-        MIDI_Device_USBTask(&USB_MIDI_Interface);
-#endif
-
-#if defined(RGBLIGHT_ANIMATIONS) & defined(RGBLIGHT_ENABLE)
-        rgblight_task();
-#endif
-
-#ifdef MODULE_ADAFRUIT_BLE
-        adafruit_ble_task();
-#endif
-
-#ifdef VIRTSER_ENABLE
-        virtser_task();
-        CDC_Device_USBTask(&cdc_device);
-#endif
-
-#ifdef RAW_ENABLE
-        raw_hid_task();
-#endif
-
-#if !defined(INTERRUPT_CONTROL_ENDPOINT)
         master_USB_USBTask();
-#endif
     }
 }
 
