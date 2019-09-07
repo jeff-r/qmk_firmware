@@ -924,18 +924,11 @@ static void setup_mcu(void) {
     CLKPR = (0 << CLKPS3) | (0 << CLKPS2) | (0 << CLKPS1) | (0 << CLKPS0);
 }
 
-
-bool is_keyboard_right(void);
-
-
 /** \brief Setup USB
  *
  * FIXME: Needs doc
  */
 static void setup_usb(void) {
-    if (is_keyboard_right())
-        return;
-
     // Leonardo needs. Without this USB device is not recognized.
     USB_Disable();
 
@@ -945,11 +938,6 @@ static void setup_usb(void) {
     USB_Device_EnableSOFEvents();
     print_set_sendchar(sendchar);
 }
-
-// *****************************************************************
-// JR
-// This is the main that is linked in
-
 
 /** \brief Main
  *

@@ -1,4 +1,4 @@
-SRC += matrix.c split_common/serial.c
+SRC += matrix.c split_common/serial.c main.c
 
 # MCU name
 #MCU = at90usb1287
