@@ -87,6 +87,7 @@ void matrix_init_kb(void) {
   LEDS_ON_JEFF;
   IR_LED_ON;
   PORTD |= 1;
+  debug_enable = true;
 }
 
 void matrix_scan_kb(void) {
@@ -159,14 +160,30 @@ void matrix_init(void)
   green_led_on = false;
 }
 
+bool showed_info = false;
+int tick_counter = 0;
+
+void show_info(void) {
+  if (tick_counter < 30000) {
+    tick_counter++;
+    return;
+  }
+
+  if (!showed_info)
+    print("tick\n");
+  showed_info = true;
+}
+
 void tick(void)
 {
+  show_info();
   if (!initialized_matrix)
     return;
 
   timer_counter++;
   if (timer_counter > 20000) {
     timer_counter = 0;
+      toggle_led();
     if (is_keyboard_right()) {
       toggle_led();
     } else {
