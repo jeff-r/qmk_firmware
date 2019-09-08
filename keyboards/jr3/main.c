@@ -106,7 +106,6 @@ static void setup_usb(void) {
  *
  * FIXME: Needs doc
  */
-int main(void) __attribute__((weak));
 int main(void) {
 
     setup_mcu();

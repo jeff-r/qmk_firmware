@@ -133,6 +133,15 @@ void toggle_led(void)
 
 int timer_counter;
 
+bool initialized_matrix = false;
+
+bool check_matrix(void) {
+  for (uint8_t current_row = 0; current_row < MATRIX_ROWS; current_row++) {
+    if (matrix[current_row])
+      return true;
+  }
+  return false;
+}
 
 void matrix_init(void)
 {
@@ -144,50 +153,30 @@ void matrix_init(void)
     transport_master_init();
   } else {
     transport_slave_init();
+    initialized_matrix = true;
   }
   timer_counter = 0;
   green_led_on = false;
-  toggle_led();
-  toggle_led();
-  toggle_led();
-  toggle_led();
 }
 
 void tick(void)
 {
+  if (!initialized_matrix)
+    return;
+
   timer_counter++;
   if (timer_counter > 20000) {
     timer_counter = 0;
-
     if (is_keyboard_right()) {
       toggle_led();
     } else {
-      if (matrix[0])
+      if (check_matrix())
         GREEN_LED_ON;
       else
         GREEN_LED_OFF;
     }
   }
-
-//  if (IR_BEAM_STATE)
-//  {
-//    GREEN_LED_ON;
-//    matrix[0] = 0;
-//  }
-//  else
-//  {
-//    GREEN_LED_OFF;
-//    matrix[0] = 1;
-//  }
 }
-
-// uint8_t matrix_scan(void)
-// {
-//   tick();
-// 
-//   return 1;
-// }
-
 
 uint8_t _matrix_scan(void) {
     bool changed = false;
