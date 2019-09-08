@@ -54,12 +54,10 @@ bool is_keyboard_master(void);
 
 
 bool is_keyboard_right(void) {
-  return false;
     return !is_keyboard_left();
 }
 
 bool is_keyboard_master(void) {
-  return true;
     return is_keyboard_left();
 }
 
@@ -85,8 +83,6 @@ static void setup_mcu(void) {
 }
 
 
-bool is_keyboard_right(void);
-
 
 /** \brief Setup USB
  *
@@ -106,15 +102,6 @@ static void setup_usb(void) {
     print_set_sendchar(sendchar);
 }
 
-bool is_keyboard_left(void);
-
-void master_USB_USBTask(void) {
-  // if (is_keyboard_left())
-    // return;
-
-  USB_USBTask();
-}
-
 /** \brief Main
  *
  * FIXME: Needs doc
@@ -127,7 +114,7 @@ int main(void) {
     setup_usb();
     sei();
 
-    master_USB_USBTask();
+    USB_USBTask();
     /* init modules */
     keyboard_init();
     host_set_driver(&lufa_driver);
@@ -138,7 +125,7 @@ int main(void) {
 
         keyboard_task();
 
-        master_USB_USBTask();
+        USB_USBTask();
     }
 }
 

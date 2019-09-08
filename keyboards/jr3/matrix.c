@@ -44,6 +44,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "jr_optical.h"
 #include <string.h>
 
+bool is_keyboard_right(void);
+bool is_keyboard_left(void);
+bool is_keyboard_master(void);
+
+
 
 
 // // row offsets for each hand
@@ -111,6 +116,9 @@ bool green_led_on;
 
 void toggle_led(void)
 {
+  if (is_keyboard_left())
+    return;
+
   if (green_led_on) {
     GREEN_LED_OFF;
     green_led_on = false;
@@ -120,9 +128,6 @@ void toggle_led(void)
     green_led_on = true;
     matrix[0] = 1;
   }
-  // wait_ms(100);
-  // matrix[0] = 1;
-  // wait_ms(100);
 }
 
 
@@ -148,13 +153,22 @@ void matrix_init(void)
   toggle_led();
 }
 
-void show_interrupted_beam(void)
+void tick(void)
 {
   timer_counter++;
   if (timer_counter > 20000) {
     timer_counter = 0;
-    toggle_led();
+
+    if (is_keyboard_right()) {
+      toggle_led();
+    } else {
+      if (matrix[0])
+        GREEN_LED_ON;
+      else
+        GREEN_LED_OFF;
+    }
   }
+
 //  if (IR_BEAM_STATE)
 //  {
 //    GREEN_LED_ON;
@@ -167,57 +181,58 @@ void show_interrupted_beam(void)
 //  }
 }
 
-uint8_t matrix_scan(void)
-{
-  show_interrupted_beam();
+// uint8_t matrix_scan(void)
+// {
+//   tick();
+// 
+//   return 1;
+// }
 
-  return 1;
+
+uint8_t _matrix_scan(void) {
+    bool changed = false;
+    tick();
+
+    // if (!isLeftHand)
+      // tick();
+      // toggle_led();
+
+    // Set col, read rows
+    // for (uint8_t current_col = 0; current_col < MATRIX_COLS; current_col++) {
+    //     changed |= read_rows_on_col(raw_matrix, current_col);
+    // }
+
+    // debounce(raw_matrix, matrix + thisHand, ROWS_PER_HAND, changed);
+
+    return (uint8_t)changed;
 }
 
+uint8_t matrix_scan(void) {
+  uint8_t ret = _matrix_scan();
 
-// uint8_t _matrix_scan(void) {
-//     bool changed = false;
-// 
-//     // if (!isLeftHand)
-//       // show_interrupted_beam();
-//       toggle_led();
-// 
-//     // Set col, read rows
-//     // for (uint8_t current_col = 0; current_col < MATRIX_COLS; current_col++) {
-//     //     changed |= read_rows_on_col(raw_matrix, current_col);
-//     // }
-// 
-//     // debounce(raw_matrix, matrix + thisHand, ROWS_PER_HAND, changed);
-// 
-//     return (uint8_t)changed;
-// }
-// 
-// uint8_t matrix_scan(void) {
-//   uint8_t ret = _matrix_scan();
-// 
-//   if (is_keyboard_master()) {
-//     static uint8_t error_count;
-// 
-//     if (!transport_master(matrix + thatHand)) {
-//       error_count++;
-// 
-//       if (error_count > ERROR_DISCONNECT_COUNT) {
-//                 // reset other half if disconnected
-//         for (int i = 0; i < ROWS_PER_HAND; ++i) {
-//           matrix[thatHand + i] = 0;
-//         }
-//       }
-//     } else {
-//       error_count = 0;
-//     }
-// 
-//     matrix_scan_quantum();
-//   } else {
-//     // transport_slave(matrix + thisHand);
-//   }
-// 
-//   return ret;
-// }
+  if (is_keyboard_master()) {
+    static uint8_t error_count;
+
+    if (!transport_master(matrix + thatHand)) {
+      error_count++;
+
+      if (error_count > ERROR_DISCONNECT_COUNT) {
+                // reset other half if disconnected
+        for (int i = 0; i < ROWS_PER_HAND; ++i) {
+          matrix[thatHand + i] = 0;
+        }
+      }
+    } else {
+      error_count = 0;
+    }
+
+    // matrix_scan_quantum();
+  } else {
+    transport_slave(matrix + thisHand);
+  }
+
+  return ret;
+}
 
 inline
 matrix_row_t matrix_get_row(uint8_t row)
