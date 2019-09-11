@@ -128,6 +128,13 @@ void toggle_letter(bool toggle) {
   }
 }
 
+void right_side_matrix_scan(void) {
+  if (IR_BEAM_STATE)
+    matrix[1] = 0;
+  else
+    matrix[1] = 1;
+}
+
 void toggle_led(bool toggle) {
   if (toggle) {
     GREEN_LED_OFF;
@@ -140,7 +147,8 @@ void toggles(void)
 {
   uprintf("toggle_on: %d\n", toggle_on);
   toggle_led(toggle_on);
-  toggle_letter(toggle_on);
+  // right_side_matrix_scan();
+  // toggle_letter(toggle_on);
   toggle_on = !toggle_on;
 }
 
@@ -180,61 +188,33 @@ bool showed_info = false;
 int tick_counter = 0;
 
 void show_info(bool force) {
-  // if (force || tick_counter < 30000) {
-  //   tick_counter++;
-  //   return;
-  // }
 
   if (force || !showed_info)
-    // uprintf("Serial port state: %d\n", DDRD);
-    // uprintf("initialized_matrix: %d\n", initialized_matrix);
     for(int i = 0; i < MATRIX_ROWS; i++) {
       uprintf("matrix[%d] = %d\n", i, matrix[i]);
     }
   showed_info = true;
 }
 
-// inline static void serial_high(void) { writePinHigh(SOFT_SERIAL_PIN); }
-
-
 void tick(void)
 {
   if (!initialized_matrix)
     return;
 
+  right_side_matrix_scan();
   timer_counter++;
-  // uprintf("timer_counter: %d\n", timer_counter);
   if (timer_counter > 20000) {
     show_info(true);
     timer_counter = 0;
     toggles();
-    // if (is_keyboard_right()) {
-    //   toggles();
-    // } else {
-    //   if (check_matrix())
-    //     GREEN_LED_ON;
-    //   else
-    //     GREEN_LED_OFF;
-    // }
   }
 }
 
 uint8_t _matrix_scan(void) {
-    bool changed = false;
-    tick();
+  bool changed = false;
+  tick();
 
-    // if (!isLeftHand)
-      // tick();
-      // toggles();
-
-    // Set col, read rows
-    // for (uint8_t current_col = 0; current_col < MATRIX_COLS; current_col++) {
-    //     changed |= read_rows_on_col(raw_matrix, current_col);
-    // }
-
-    // debounce(raw_matrix, matrix + thisHand, ROWS_PER_HAND, changed);
-
-    return (uint8_t)changed;
+  return (uint8_t)changed;
 }
 
 uint8_t matrix_scan(void) {
