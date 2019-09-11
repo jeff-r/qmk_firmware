@@ -113,22 +113,35 @@ void blink(void)
 }
 
 
-bool green_led_on;
+bool toggle_on = false;
 
-void toggle_led(void)
-{
+void toggle_letter(bool toggle) {
   if (is_keyboard_left())
     return;
 
-  if (green_led_on) {
-    GREEN_LED_OFF;
-    green_led_on = false;
+  if (toggle) {
     matrix[0] = 0;
+    matrix[1] = 0;
+  } else {
+    matrix[0] = 2;
+    matrix[1] = 2;
+  }
+}
+
+void toggle_led(bool toggle) {
+  if (toggle) {
+    GREEN_LED_OFF;
   } else {
     GREEN_LED_ON;
-    green_led_on = true;
-    matrix[0] = 1;
   }
+}
+
+void toggles(void)
+{
+  uprintf("toggle_on: %d\n", toggle_on);
+  toggle_led(toggle_on);
+  toggle_letter(toggle_on);
+  toggle_on = !toggle_on;
 }
 
 
@@ -146,52 +159,63 @@ bool check_matrix(void) {
 
 void matrix_init(void)
 {
+  if (initialized_matrix)
+    return;
+
   matrix_init_quantum();
   thisHand = isLeftHand ? 0 : (ROWS_PER_HAND);
   thatHand = ROWS_PER_HAND - thisHand;
 
+  initialized_matrix = true;
   if (is_keyboard_master()) {
     transport_master_init();
   } else {
     transport_slave_init();
-    initialized_matrix = true;
   }
   timer_counter = 0;
-  green_led_on = false;
+  toggle_on = false;
 }
 
 bool showed_info = false;
 int tick_counter = 0;
 
-void show_info(void) {
-  if (tick_counter < 30000) {
-    tick_counter++;
-    return;
-  }
+void show_info(bool force) {
+  // if (force || tick_counter < 30000) {
+  //   tick_counter++;
+  //   return;
+  // }
 
-  if (!showed_info)
-    print("tick\n");
+  if (force || !showed_info)
+    // uprintf("Serial port state: %d\n", DDRD);
+    // uprintf("initialized_matrix: %d\n", initialized_matrix);
+    for(int i = 0; i < MATRIX_ROWS; i++) {
+      uprintf("matrix[%d] = %d\n", i, matrix[i]);
+    }
   showed_info = true;
 }
 
+// inline static void serial_high(void) { writePinHigh(SOFT_SERIAL_PIN); }
+
+
 void tick(void)
 {
-  show_info();
   if (!initialized_matrix)
     return;
 
   timer_counter++;
+  // uprintf("timer_counter: %d\n", timer_counter);
   if (timer_counter > 20000) {
+    show_info(true);
     timer_counter = 0;
-      toggle_led();
-    if (is_keyboard_right()) {
-      toggle_led();
-    } else {
-      if (check_matrix())
-        GREEN_LED_ON;
-      else
-        GREEN_LED_OFF;
-    }
+    toggles();
+    // if (is_keyboard_right()) {
+    //   toggles();
+    // } else {
+    //   if (check_matrix())
+    //     GREEN_LED_ON;
+    //   else
+    //     GREEN_LED_OFF;
+    // }
   }
 }
 
@@ -201,7 +225,7 @@ uint8_t _matrix_scan(void) {
 
     // if (!isLeftHand)
       // tick();
-      // toggle_led();
+      // toggles();
 
     // Set col, read rows
     // for (uint8_t current_col = 0; current_col < MATRIX_COLS; current_col++) {
