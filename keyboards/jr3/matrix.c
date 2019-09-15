@@ -188,7 +188,6 @@ bool showed_info = false;
 int tick_counter = 0;
 
 void show_info(bool force) {
-
   if (force || !showed_info)
     for(int i = 0; i < MATRIX_ROWS; i++) {
       uprintf("matrix[%d] = %d\n", i, matrix[i]);
@@ -201,7 +200,6 @@ void tick(void)
   if (!initialized_matrix)
     return;
 
-  right_side_matrix_scan();
   timer_counter++;
   if (timer_counter > 20000) {
     show_info(true);
@@ -212,7 +210,13 @@ void tick(void)
 
 uint8_t _matrix_scan(void) {
   bool changed = false;
-  tick();
+  right_side_matrix_scan();
+  show_info(true);
+  if (matrix[1] > 0)
+    toggle_led(true);
+  else
+    toggle_led(false);
+  // tick();
 
   return (uint8_t)changed;
 }

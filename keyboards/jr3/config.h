@@ -38,85 +38,49 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define SPLIT_HAND_PIN D6
 
 // Columns to pins
-// These are all outputs
-// V0  B0
-// V1  B1
-// V2  B2
-// V3  B3
-// V4  B7
-// V5  D0
-// V6  D1
-// V7  D2
-// V8  D3
-// V9  C6
-// V10 C7
-// V11 D5
-// V12 D4
-// V13 D6
-// V14 D7
-// V15 B4
-// V16 B5
+// V0  F0
+// V1  F1
+// V2  F4
+// V3  F5
+// V4  F6
+// V5  F7
+// V6  B6
+// V7  B5
 
 // Rows to pins
-// These are all inputs
-// H0 F0
-// H1 F1
-// H2 F4
-// H3 F5
-// H4 F6
-// H5 F7
+// This is for the final implentation
+// H4 D7
+// H3 D6
+// H2 D4
+// H1 D5
+// H0 C7
 
-// Planck PCB default pin-out
-// Change this to how you wired your keyboard
-// COLS: Left to right, ROWS: Top to bottom
-// Harness 2
-// (Used by 2017.02.1)
-
+// Rows to pins
+// This is for the breadboard. D4 and D5 aren't available.
+// H4 D7
+// H3 D6
+// H2 C7
+// H1 C6
+// H0 D3
 
 #define MATRIX_ROW_PINS { F0, F1, F4, F5, F6 }
 
 #define MATRIX_COL_PINS { B0, B1, B2, B3, B7, D0, D1, D2, D3, C6, C7, D5, B4, D4, D6, D7 }
-// #define MATRIX_COL_PINS { B4, D7, D6, D4, D0, D5, C7, C6, B3, B2, B1, B7, B0, B5, E6, D1 }
-// #define MATRIX_COL_PINS { B4, D6, D4, D5, C7, C6, D3, D2, D1, D0, B7, E6, B3, B2, B1, B0, B5, B4 }
-// #define MATRIX_COL_PINS { D7, D6, D4, D5, C7, C6, D3, D2, D1, D0, B7, E6, B3, B2, B1, B0, B5, B4 }
-
-// #define MATRIX_ROW_PINS { F0, F1, F4, F5, F6 }
-// #define MATRIX_COL_PINS { D7, D6, D4, D5, C7, C6, D3, D2, D1, D0, B7, E6, B3, B2, B1, B0, B5, B4 }
-
-// Harness 3
-// (Used by 2017.03.1)
-// #define MATRIX_ROW_PINS { F1, F4, F5, F6, F7 }
-// #define MATRIX_COL_PINS { B4, D7, D6, D4, D5, C7, C6, D3, D2, D1, D0, B7, B3, B2, B1, B0, B5 }
 
 #define UNUSED_PINS
 
 /* COL2ROW or ROW2COL */
 #define DIODE_DIRECTION COL2ROW
 
-/* define if matrix has ghost */
-//#define MATRIX_HAS_GHOST
-
-/* number of backlight levels */
-// #define BACKLIGHT_LEVELS 0
-
 /* Set 0 if debouncing isn't needed */
 // #define DEBOUNCING_DELAY 5
 #define DEBOUNCE_DELAY 1
-/* Mechanical locking support. Use KC_LCAP, KC_LNUM or KC_LSCR instead in keymap */
-/* #define LOCKING_SUPPORT_ENABLE */
-/* Locking resynchronize hack */
-/* #define LOCKING_RESYNC_ENABLE */
 
 /* key combination for command */
 
 #define IS_COMMAND() ( \
     keyboard_report->mods == (MOD_BIT(KC_LSHIFT) | MOD_BIT(KC_RSHIFT)) \
 )
-
-/* control how magic key switches layers */
-//#define MAGIC_KEY_SWITCH_LAYER_WITH_FKEYS  true
-//#define MAGIC_KEY_SWITCH_LAYER_WITH_NKEYS  true
-//#define MAGIC_KEY_SWITCH_LAYER_WITH_CUSTOM false
 
 /* override magic key keymap */
 //#define MAGIC_KEY_SWITCH_LAYER_WITH_FKEYS
