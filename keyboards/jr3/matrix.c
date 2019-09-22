@@ -63,31 +63,77 @@ uint8_t thisHand, thatHand;
 static matrix_row_t matrix[MATRIX_ROWS];
 // static matrix_row_t raw_matrix[ROWS_PER_HAND];
 
-#define LEDS_ON_JEFF  (PORTB = 0b01110000)
-#define LEDS_OFF_JEFF (PORTB = 0)
+// #define LEDS_ON_JEFF  (PORTB = 0b01110000)
+// #define LEDS_OFF_JEFF (PORTB = 0)
 
-#define IR_LED_ON     (PORTB |=  (1<<5))
-#define IR_LED_OFF    (PORTB &= ~(1<<5))
+// #define IR_LED_ON     (PORTB |=  (1<<5))
+// #define IR_LED_OFF    (PORTB &= ~(1<<5))
 
-#define GREEN_LED_ON     (PORTB |=  (1<<4))
-#define GREEN_LED_OFF    (PORTB &= ~(1<<4))
+#define GREEN_LED_ON     (PORTD |=  (1<<2))
+#define GREEN_LED_OFF    (PORTD &= ~(1<<2))
 
-#define IR_BEAM_STATE    (PINC & (1<<7))
+// #define IR_BEAM_STATE    (PINC & (1<<7))
 
-#define LED_CONFIG_B  (DDRB  = 0b01110000)
-#define LED_CONFIG_C  (DDRC &= ~(1<<7))
+// #define LED_CONFIG_B  (DDRB  = 0b01110000)
+// #define LED_CONFIG_C  (DDRC &= ~(1<<7))
 
 #define CPU_PRESCALE(n) (CLKPR = 0x80, CLKPR = (n))
 
+// See https://stackoverflow.com/questions/47981/how-do-you-set-clear-and-toggle-a-single-bit/263738#263738
+/* a=target variable, b=bit number to act upon 0-n */
+#define BIT_SET(a,b) ((a) |= (1ULL<<(b)))
+#define BIT_CLEAR(a,b) ((a) &= ~(1ULL<<(b)))
+#define BIT_FLIP(a,b) ((a) ^= (1ULL<<(b)))
+#define BIT_CHECK(a,b) (!!((a) & (1ULL<<(b))))        // '!!' to make sure this returns 0 or 1
+
+
+// Columns to pins
+// V0  F0
+// V1  F1
+// V2  F4
+// V3  F5
+
+#define col_0_state (PINF & (1<<0))
+#define col_1_state (PINF & (1<<1))
+#define col_2_state (PINF & (1<<4))
+#define col_3_state (PINF & (1<<5))
+#define col_4_state (PINF & (1<<6))
+
+// Rows to pins
+// This is for the breadboarded prototype.
+// H4 D7
+// H3 D6
+// H2 C7
+// H1 C6
+
+#define row_0_state (PIND & (1<<7))
+#define row_1_state (PIND & (1<<6))
+#define row_2_state (PINC & (1<<7))
+#define row_3_state (PINC & (1<<6))
 
 void matrix_init_kb(void) {
   matrix_init_user();
-  LED_CONFIG_B;
-  LED_CONFIG_C;
-  LEDS_ON_JEFF;
-  IR_LED_ON;
-  PORTD |= 1;
+  // LED_CONFIG_B;
+  // LED_CONFIG_C;
+  // LEDS_ON_JEFF;
+  // IR_LED_ON;
+  // PORTD |= 1;
   debug_enable = true;
+  // Set as input
+  (DDRC &= ~(1<<6));
+  (DDRC &= ~(1<<7));
+  (DDRD &= ~(1<<6));
+  (DDRD &= ~(1<<7));
+
+  (DDRF &= ~(1<<0));
+  (DDRF &= ~(1<<1));
+  (DDRF &= ~(1<<4));
+  (DDRF &= ~(1<<5));
+  (DDRF &= ~(1<<6));
+
+  // Set as output
+  // (PINC &= (1<<2));
+  (PIND &= (1<<2));
 }
 
 void matrix_scan_kb(void) {
@@ -102,15 +148,15 @@ __attribute__ ((weak))
 void matrix_scan_user(void) {
 }
 
-void blink(void)
-{
-  GREEN_LED_OFF;
-  matrix[0] = 0;
-  wait_ms(100);
-  GREEN_LED_ON;
-  matrix[0] = 1;
-  wait_ms(100);
-}
+// void blink(void)
+// {
+//   GREEN_LED_OFF;
+//   matrix[0] = 0;
+//   wait_ms(100);
+//   GREEN_LED_ON;
+//   matrix[0] = 1;
+//   wait_ms(100);
+// }
 
 
 bool toggle_on = false;
@@ -128,13 +174,6 @@ void toggle_letter(bool toggle) {
   }
 }
 
-void right_side_matrix_scan(void) {
-  if (IR_BEAM_STATE)
-    matrix[1] = 0;
-  else
-    matrix[1] = 1;
-}
-
 void toggle_led(bool toggle) {
   if (toggle) {
     GREEN_LED_OFF;
@@ -143,14 +182,58 @@ void toggle_led(bool toggle) {
   }
 }
 
-void toggles(void)
-{
-  uprintf("toggle_on: %d\n", toggle_on);
-  toggle_led(toggle_on);
-  // right_side_matrix_scan();
-  // toggle_letter(toggle_on);
-  toggle_on = !toggle_on;
+
+
+matrix_row_t prev_state = 0;
+bool right_side_matrix_scan(void) {
+  if (is_keyboard_left())
+    return false;
+
+  // if (IR_BEAM_STATE)
+  //   matrix[1] = 0;
+  // else
+  //   matrix[1] = 1;
+
+  if (row_0_state) {
+    // matrix[1] = 0;
+    BIT_CLEAR(matrix[1],0);
+    toggle_led(false);
+  } else {
+    // matrix[1] = 1;
+    BIT_SET(matrix[1],0);
+    toggle_led(true);
+  }
+
+  // if (!col_1_state)
+  //   BIT_SET(matrix[1],1);
+  // else
+  //   BIT_CLEAR(matrix[1],1);
+
+  // if (!col_2_state)
+  //   BIT_SET(matrix[1],2);
+  // else
+  //   BIT_CLEAR(matrix[1],2);
+
+  // if (!col_3_state)
+  //   BIT_SET(matrix[1],3);
+  // else
+  //   BIT_CLEAR(matrix[1],3);
+
+
+  if (prev_state == matrix[1])
+    return false;
+  prev_state = matrix[1];
+  return true;
 }
+
+// void toggles(void)
+// {
+//   uprintf("toggle_on: %d\n", toggle_on);
+//   toggle_led(toggle_on);
+//   // right_side_matrix_scan();
+//   // toggle_letter(toggle_on);
+//   toggle_on = !toggle_on;
+// }
 
 
 int timer_counter;
@@ -185,7 +268,6 @@ void matrix_init(void)
 }
 
 bool showed_info = false;
-int tick_counter = 0;
 
 void show_info(bool force) {
   if (force || !showed_info)
@@ -195,30 +277,43 @@ void show_info(bool force) {
   showed_info = true;
 }
 
-void tick(void)
-{
-  if (!initialized_matrix)
-    return;
+bool matrix_test_on = false;
+void toggle_matrix_test(void) {
 
-  timer_counter++;
-  if (timer_counter > 20000) {
-    show_info(true);
-    timer_counter = 0;
-    toggles();
-  }
+  if (matrix_test_on)
+    matrix[1] = 1;
+  else
+    matrix[1] = 0;
+  matrix_test_on = !matrix_test_on;  
 }
 
-uint8_t _matrix_scan(void) {
-  bool changed = false;
-  right_side_matrix_scan();
-  show_info(true);
-  if (matrix[1] > 0)
-    toggle_led(true);
-  else
-    toggle_led(false);
-  // tick();
+// bool tick(void)
+// {
+//   if (!initialized_matrix)
+//     return false;
+// 
+//   timer_counter++;
+//   if (timer_counter > 20000) {
+//     // show_info(true);
+//     toggle_matrix_test();
+//     timer_counter = 0;
+//     return true;
+//     // toggles();
+//   }
+//   return false;
+// }
 
-  return (uint8_t)changed;
+uint8_t _matrix_scan(void) {
+  // bool changed = false;
+  return right_side_matrix_scan();
+  // show_info(true);
+  // if (matrix[1] > 0)
+  //   toggle_led(true);
+  // else
+  //   toggle_led(false);
+  // return (uint8_t) tick();
+
+  // return (uint8_t)changed;
 }
 
 uint8_t matrix_scan(void) {

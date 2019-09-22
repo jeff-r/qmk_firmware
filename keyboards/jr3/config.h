@@ -30,12 +30,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 /* key matrix size */
 #define MATRIX_ROWS 2
-#define MATRIX_COLS 2
+#define MATRIX_COLS 4
 
 #define CUSTOM_MATRIX 2 /* Disables built-in matrix scanning code */
 
 #define SOFT_SERIAL_PIN D0  // or D1, D2, D3, E6
-#define SPLIT_HAND_PIN D6
+#define SPLIT_HAND_PIN D1
 
 // Columns to pins
 // V0  F0
