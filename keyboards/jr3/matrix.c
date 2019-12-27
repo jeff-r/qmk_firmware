@@ -30,8 +30,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "transport.h"
 
 
-
-
 #include <stdint.h>
 #include <stdbool.h>
 #include <avr/io.h>
@@ -49,6 +47,7 @@ bool is_keyboard_left(void);
 bool is_keyboard_master(void);
 
 
+void show_info(bool);
 
 
 // // row offsets for each hand
@@ -87,43 +86,39 @@ static matrix_row_t matrix[MATRIX_ROWS];
 #define BIT_CHECK(a,b) (!!((a) & (1ULL<<(b))))        // '!!' to make sure this returns 0 or 1
 
 
-// Columns to pins
+// Rows to pins
 // V0  F0
 // V1  F1
 // V2  F4
 // V3  F5
 
-#define col_0_state (PINF & (1<<0))
-#define col_1_state (PINF & (1<<1))
-#define col_2_state (PINF & (1<<4))
-#define col_3_state (PINF & (1<<5))
-#define col_4_state (PINF & (1<<6))
+#define row_0_state (PINF & (1<<0))
+#define row_1_state (PINF & (1<<1))
+#define row_2_state (PINF & (1<<4))
+#define row_3_state (PINF & (1<<5))
+#define row_4_state (PINF & (1<<6))
 
-// Rows to pins
+// Cols to pins
 // This is for the breadboarded prototype.
-// H4 D7
-// H3 D6
-// H2 C7
-// H1 C6
+// H0 B0
+// H1 B1
+// H2 B2
+// H3 B3
 
-#define row_0_state (PIND & (1<<7))
-#define row_1_state (PIND & (1<<6))
-#define row_2_state (PINC & (1<<7))
-#define row_3_state (PINC & (1<<6))
+#define col_0_state (PINB & (1<<0))
+#define col_1_state (PINB & (1<<1))
+#define col_2_state (PINB & (1<<2))
+#define col_3_state (PINB & (1<<3))
 
 void matrix_init_kb(void) {
+  show_info(true);
   matrix_init_user();
-  // LED_CONFIG_B;
-  // LED_CONFIG_C;
-  // LEDS_ON_JEFF;
-  // IR_LED_ON;
-  // PORTD |= 1;
   debug_enable = true;
   // Set as input
-  (DDRC &= ~(1<<6));
-  (DDRC &= ~(1<<7));
-  (DDRD &= ~(1<<6));
-  (DDRD &= ~(1<<7));
+  (DDRB &= ~(1<<0));
+  (DDRB &= ~(1<<1));
+  (DDRB &= ~(1<<2));
+  (DDRB &= ~(1<<3));
 
   (DDRF &= ~(1<<0));
   (DDRF &= ~(1<<1));
@@ -133,7 +128,7 @@ void matrix_init_kb(void) {
 
   // Set as output
   // (PINC &= (1<<2));
-  (PIND &= (1<<2));
+  // (PIND &= (1<<2));
 }
 
 void matrix_scan_kb(void) {
@@ -147,17 +142,6 @@ void matrix_init_user(void) {
 __attribute__ ((weak))
 void matrix_scan_user(void) {
 }
-
-// void blink(void)
-// {
-//   GREEN_LED_OFF;
-//   matrix[0] = 0;
-//   wait_ms(100);
-//   GREEN_LED_ON;
-//   matrix[0] = 1;
-//   wait_ms(100);
-// }
-
 
 bool toggle_on = false;
 
@@ -185,8 +169,8 @@ void toggle_led(bool toggle) {
 
 
 matrix_row_t prev_state = 0;
-bool right_side_matrix_scan(void) {
-  if (is_keyboard_left())
+bool left_side_matrix_scan(void) {
+  if (!is_keyboard_left())
     return false;
 
   // if (IR_BEAM_STATE)
@@ -194,14 +178,14 @@ bool right_side_matrix_scan(void) {
   // else
   //   matrix[1] = 1;
 
-  if (row_0_state) {
+  if (col_0_state) {
     // matrix[1] = 0;
     BIT_CLEAR(matrix[1],0);
-    toggle_led(false);
+    // toggle_led(false);
   } else {
     // matrix[1] = 1;
     BIT_SET(matrix[1],0);
-    toggle_led(true);
+    // toggle_led(true);
   }
 
   // if (!col_1_state)
@@ -230,7 +214,7 @@ bool right_side_matrix_scan(void) {
 // {
 //   uprintf("toggle_on: %d\n", toggle_on);
 //   toggle_led(toggle_on);
-//   // right_side_matrix_scan();
+//   // left_side_matrix_scan();
 //   // toggle_letter(toggle_on);
 //   toggle_on = !toggle_on;
 // }
@@ -270,10 +254,13 @@ void matrix_init(void)
 bool showed_info = false;
 
 void show_info(bool force) {
-  if (force || !showed_info)
-    for(int i = 0; i < MATRIX_ROWS; i++) {
-      uprintf("matrix[%d] = %d\n", i, matrix[i]);
-    }
+  // if (force || !showed_info)
+  //   for(int i = 0; i < MATRIX_ROWS; i++) {
+  //     uprintf("matrix[%d] = %d\n", i, matrix[i]);
+  //   }
+  // if (!showed_info)
+    dprintf("show_info");
+
   showed_info = true;
 }
 
@@ -304,9 +291,10 @@ void toggle_matrix_test(void) {
 // }
 
 uint8_t _matrix_scan(void) {
+  // return left_side_matrix_scan();
+
+  return true;
   // bool changed = false;
-  return right_side_matrix_scan();
-  // show_info(true);
   // if (matrix[1] > 0)
   //   toggle_led(true);
   // else

@@ -21,12 +21,25 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "config_common.h"
 
 /* USB Device descriptor parameter */
+//  #define VENDOR_ID       0xFEED
+//  #define PRODUCT_ID      0x6060
+//  #define DEVICE_VER      0x0001
+//  #define MANUFACTURER    Bantam Keyboards
+//  #define PRODUCT         Bantam44
+//  #define DESCRIPTION     A custom keyboard
+
+// #define VENDOR_ID       0xFEED
+// #define PRODUCT_ID      0x6060
+// #define MANUFACTURER    OLKB
+// #define PRODUCT         Planck
+// #define DESCRIPTION     A compact ortholinear keyboard
+
 #define VENDOR_ID       0xFEED
-#define PRODUCT_ID      0x6060
+#define PRODUCT_ID      0xBEEF
 #define DEVICE_VER      0x0001
-#define MANUFACTURER    Bantam Keyboards
-#define PRODUCT         Bantam44
-#define DESCRIPTION     A custom keyboard
+#define MANUFACTURER    t.m.k.
+#define PRODUCT         Macway mod
+#define DESCRIPTION     t.m.k. keyboard firmware for Macway mod
 
 /* key matrix size */
 #define MATRIX_ROWS 2
@@ -34,8 +47,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #define CUSTOM_MATRIX 2 /* Disables built-in matrix scanning code */
 
-#define SOFT_SERIAL_PIN D0  // or D1, D2, D3, E6
-#define SPLIT_HAND_PIN D1
+#define SOFT_SERIAL_PIN D3  // or D1, D2, D3, E6
+#define SPLIT_HAND_PIN D4
 
 // Columns to pins
 // V0  F0
@@ -63,9 +76,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 // H1 C6
 // H0 D3
 
-#define MATRIX_ROW_PINS { F0, F1, F4, F5, F6 }
+#define MATRIX_COL_PINS { F0, F1, F4, F5, F6 }
 
-#define MATRIX_COL_PINS { B0, B1, B2, B3, B7, D0, D1, D2, D3, C6, C7, D5, B4, D4, D6, D7 }
+#define MATRIX_ROW_PINS { B0, B1, B2, B3, B7, D0, D1, D2 }
+// #define MATRIX_ROW_PINS { B0, B1, B2, B3, B7, D0, D1, D2, D3, C6, C7, D5, B4, D4, D6, D7 }
 
 #define UNUSED_PINS
 
@@ -120,7 +134,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 /* disable debug print */
-//#define NO_DEBUG
+// #define NO_DEBUG
 
 /* disable print */
 //#define NO_PRINT
